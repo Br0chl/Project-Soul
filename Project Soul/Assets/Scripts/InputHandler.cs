@@ -12,13 +12,18 @@ namespace PS
         public float mouseX;
         public float mouseY;
 
+        public bool b_Input;
+
+        public bool rollFlag;
+        public bool isInteracting;
+
         PlayerControls inputActions;
         CameraHandler cameraHandler;
 
         Vector2 movementInput;
         Vector2 cameraInput;
 
-        private void Awake()
+        private void Start()
         {
             cameraHandler = CameraHandler.singleton;
         }
@@ -55,6 +60,7 @@ namespace PS
         public void TickInput(float delta)
         {
             MoveInput(delta);
+            HandleRollInput(delta);
         }
 
         private void MoveInput(float delta)
@@ -65,6 +71,14 @@ namespace PS
 
             mouseX = cameraInput.x;
             mouseY = cameraInput.y;
+        }
+
+        private void HandleRollInput(float delta)
+        {
+            b_Input = inputActions.PlayerActions.Roll.triggered;
+
+            if (b_Input)
+            { rollFlag = true; }
         }
     }
 }
