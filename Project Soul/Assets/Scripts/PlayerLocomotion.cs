@@ -6,6 +6,7 @@ namespace PS
 {
     public class PlayerLocomotion : MonoBehaviour
     {
+        PlayerManager playerManager;
         Transform cameraObject;
         InputHandler inputHandler;
         Vector3 moveDirection;
@@ -13,19 +14,17 @@ namespace PS
         [HideInInspector] public Transform myTransform; // players transform
         [HideInInspector] public AnimatorHandler animatorHandler;
 
-        public new Rigidbody rb;
+        public Rigidbody rb;
         public GameObject normalCamera;
 
-        [Header("Stats")]
+        [Header("Movement Stats")]
         [SerializeField] float movementSpeed = 5f;
         [SerializeField] float sprintSpeed = 7f;
         [SerializeField] float rotationSpeed = 10f;
 
-        public bool isSprinting;
-
-
         void Start()
         {
+            playerManager = GetComponent<PlayerManager>();
             rb = GetComponent<Rigidbody>();
             inputHandler = GetComponent<InputHandler>();
             animatorHandler = GetComponentInChildren<AnimatorHandler>();
@@ -35,16 +34,6 @@ namespace PS
 
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-        }
-
-        public void Update()
-        {
-            float delta = Time.deltaTime;
-
-            isSprinting = inputHandler.b_Input;
-            inputHandler.TickInput(delta);
-            HandleMovement(delta);
-            HandleRollingAndSprinting(delta);
         }
 
         #region Movement
@@ -88,7 +77,7 @@ namespace PS
             if (inputHandler.sprintFlag)
             {
                 speed = sprintSpeed;
-                isSprinting = true;
+                playerManager.isSprinting = true;
                 moveDirection *= speed;
             }
             else
@@ -99,7 +88,7 @@ namespace PS
             Vector3 projectedVelocity = Vector3.ProjectOnPlane(moveDirection, normalVector);
             rb.velocity = projectedVelocity;
 
-            animatorHandler.UpdateAnimatorValues(inputHandler.moveAmount, 0, isSprinting);
+            animatorHandler.UpdateAnimatorValues(inputHandler.moveAmount, 0, playerManager.isSprinting);
 
             if (animatorHandler.canRotate)
             { HandleRotation(delta); }
@@ -128,7 +117,6 @@ namespace PS
                 }
             }
         }
-
         #endregion
     }
 }
